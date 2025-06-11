@@ -27,6 +27,8 @@ ON specs.movie_id = revenue.movie_id
 WHERE mpaa_rating = 'G'
 ORDER BY revenue.worldwide_gross DESC;
 
+--Toy Story 4
+
 --4. Write a query that returns, for each distributor in the distributors table, the distributor name and the number of movies associated with that distributor in the movies 
 --table. Your result set should include all of the distributors, whether or not they have any movies in the movies table.
 
@@ -38,6 +40,15 @@ GROUP BY company_name;
 
 --5. Write a query that returns the five distributors with the highest average movie budget.
 
+SELECT distributors.company_name, AVG(revenue.film_budget)
+FROM specs
+INNER JOIN revenue
+ON specs.movie_id = revenue.movie_id
+INNER JOIN distributors
+ON specs. domestic_distributor_id = distributors.distributor_id
+GROUP BY company_name
+ORDER BY AVG(revenue. film_budget) DESC
+LIMIT 5;
 
 
 --6. How many movies in the dataset are distributed by a company which is not headquartered in California? Which of these movies has the highest imdb rating?
@@ -48,11 +59,20 @@ INNER JOIN specs
 ON specs. domestic_distributor_id = distributors.distributor_id
 INNER JOIN rating
 ON specs.movie_id = rating.movie_id
-WHERE headquarters NOT LIKE '%CA'
+WHERE headquarters NOT LIKE '%CA%'
 ORDER BY rating.imdb_rating DESC;
 
 --7. Which have a higher average rating, movies which are over two hours long or movies which are under two hours?
 
-
-
-
+SELECT 
+	CASE
+		WHEN specs.length_in_min > 120 THEN 'Over 2 hours'
+		WHEN specs.length_in_min < 120 THEN 'Under 2 hours'
+	END AS film_length_category,
+	AVG(rating.imdb_rating) AS average_rating
+	FROM
+		specs
+	JOIN rating ON specs.movie_id = rating.movie_id
+	GROUP BY film_length_category
+	ORDER BY 1 DESC;
+		
